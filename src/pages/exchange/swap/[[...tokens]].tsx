@@ -62,6 +62,8 @@ import { useSwapCallback } from '../../../hooks/useSwapCallback'
 import { useUSDCValue } from '../../../hooks/useUSDCPrice'
 import { warningSeverity } from '../../../functions/prices'
 
+import useMistXMinerTipEstimate from '../../../hooks/useMistXMinerTipEstimate'
+
 export default function Swap() {
   const { i18n } = useLingui()
 
@@ -439,7 +441,8 @@ export default function Swap() {
   //     router.push(`/swap/${Currency.getNativeCurrencySymbol(chainId)}`);
   //   }
   // }, [chainId, previousChainId, router]);
-
+  const estimate = useMistXMinerTipEstimate()
+  console.log('tip estimate', estimate)
   return (
     <>
       <Head>

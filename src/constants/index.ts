@@ -174,6 +174,9 @@ export const DEFAULT_ARCHER_ETH_TIP: JSBI = JSBI.BigInt(
   DEFAULT_ARCHER_GAS_ESTIMATE.mul(DEFAULT_ARCHER_GAS_PRICES[4]).toString()
 )
 
+// default mistX tip margin, in bips
+export const DEFAULT_MISTX_TIP_MARGIN = 128
+
 // used for rewards deadlines
 export const BIG_INT_SECONDS_IN_WEEK = JSBI.BigInt(60 * 60 * 24 * 7)
 

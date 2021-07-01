@@ -1,10 +1,22 @@
 import { Currency, CurrencyAmount, Pair, Trade, TradeType } from '@sushiswap/sdk'
+import {
+  MinTradeEstimate,
+  Exchange,
+  Trade as MistXTrade,
+  Pair as MistXPair,
+  CurrencyAmount as MistXCurrencyAmount,
+  Currency as MistXCurrency,
+  Token as MistXToken,
+} from '@alchemistcoin/sdk'
 import { PairState, useV2Pairs } from './useV2Pairs'
 
 import { BETTER_TRADE_LESS_HOPS_THRESHOLD } from '../constants'
 import { isTradeBetter } from '../functions/trade'
 import { useAllCurrencyCombinations } from './useAllCurrencyCombinations'
 import { useMemo } from 'react'
+import { BigNumber } from '@ethersproject/bignumber'
+import useLatestGasPrice from './useLatestGasPrice'
+import { useUserMistXTipMargin } from '../state/user/hooks'
 
 function useAllCommonPairs(currencyA?: Currency, currencyB?: Currency): Pair[] {
   const allCurrencyCombinations = useAllCurrencyCombinations(currencyA, currencyB)
@@ -106,4 +118,33 @@ export function useV2TradeExactOut(
     }
     return null
   }, [currencyIn, currencyAmountOut, allowedPairs, maxHops])
+}
+
+export function useMistXMinTradeAmount(currencyIn?: Currency, currencyOut?: Currency): MinTradeEstimate {
+  const gasPriceToBeat = useLatestGasPrice()
+  const [tipMargin] = useUserMistXTipMargin()
+  const allowedPairs = useAllCommonPairs(currencyIn, currencyOut).map((pair: Pair): MistXPair => {
+    const r1 = MistXCurrencyAmount.fromRawAmount(
+      pair.token0 as unknown as MistXToken,
+      pair.reserve0.quotient.toString()
+    )
+    const r2 = MistXCurrencyAmount.fromRawAmount(
+      pair.token1 as unknown as MistXToken,
+      pair.reserve1.quotient.toString()
+    )
+    return new MistXPair(r1, r2, Exchange.SUSHI)
+  })
+  console.log('minTradeAmount', tipMargin, currencyIn, currencyOut, gasPriceToBeat)
+  const sushiMinTradeEstimate = useMemo(() => {
+    if (!currencyIn || !currencyOut || !gasPriceToBeat || !tipMargin || !allowedPairs.length) return null
+    return MistXTrade.estimateMinTradeAmounts(
+      allowedPairs,
+      currencyIn as unknown as MistXCurrency,
+      currencyOut as unknown as MistXCurrency,
+      gasPriceToBeat.toString(),
+      tipMargin.toString(),
+      1
+    )
+  }, [currencyIn, currencyOut, gasPriceToBeat, tipMargin, allowedPairs])
+  return sushiMinTradeEstimate
 }

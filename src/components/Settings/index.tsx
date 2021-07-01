@@ -4,6 +4,7 @@ import { StyledMenu, StyledMenuButton } from '../StyledMenu'
 import {
   useExpertModeManager,
   useUserArcherUseRelay,
+  useUserMistXUseRelay,
   useUserSingleHopOnly,
   useUserSlippageTolerance,
   useUserTransactionTTL,
@@ -44,7 +45,7 @@ export default function SettingsTab({ placeholderSlippage }: { placeholderSlippa
   const [ttl, setTtl] = useUserTransactionTTL()
 
   const [userUseArcher, setUserUseArcher] = useUserArcherUseRelay()
-
+  const [userUseMistX, setUserUseMistX] = useUserMistXUseRelay()
   return (
     <StyledMenu ref={node}>
       <StyledMenuButton onClick={toggle} id="open-settings-dialog-button">
@@ -130,23 +131,42 @@ export default function SettingsTab({ placeholderSlippage }: { placeholderSlippa
               />
             </RowBetween>
             {chainId == ChainId.MAINNET && (
-              <RowBetween>
-                <RowFixed>
-                  <Typography variant="sm" className="text-primary">
-                    {i18n._(t`MEV Shield by Archer DAO`)}
-                  </Typography>
-                  <QuestionHelper
-                    text={i18n._(
-                      t`Send transaction privately to avoid front-running and sandwich attacks. Requires a miner tip to incentivize miners`
-                    )}
+              <>
+                <RowBetween>
+                  <RowFixed>
+                    <Typography variant="sm" className="text-primary">
+                      {i18n._(t`MEV Shield by mistX`)}
+                    </Typography>
+                    <QuestionHelper
+                      text={i18n._(
+                        t`Send transaction privately to avoid front-running and sandwich attacks. Requires a miner tip to incentivize miners`
+                      )}
+                    />
+                  </RowFixed>
+                  <Toggle
+                    id="toggle-use-archer"
+                    isActive={userUseMistX}
+                    toggle={() => setUserUseMistX(!userUseMistX)}
                   />
-                </RowFixed>
-                <Toggle
-                  id="toggle-use-archer"
-                  isActive={userUseArcher}
-                  toggle={() => setUserUseArcher(!userUseArcher)}
-                />
-              </RowBetween>
+                </RowBetween>
+                <RowBetween>
+                  <RowFixed>
+                    <Typography variant="sm" className="text-primary">
+                      {i18n._(t`MEV Shield by Archer DAO`)}
+                    </Typography>
+                    <QuestionHelper
+                      text={i18n._(
+                        t`Send transaction privately to avoid front-running and sandwich attacks. Requires a miner tip to incentivize miners`
+                      )}
+                    />
+                  </RowFixed>
+                  <Toggle
+                    id="toggle-use-archer"
+                    isActive={userUseArcher}
+                    toggle={() => setUserUseArcher(!userUseArcher)}
+                  />
+                </RowBetween>
+              </>
             )}
           </div>
         </div>

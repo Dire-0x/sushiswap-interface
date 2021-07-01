@@ -12,7 +12,11 @@ import { isAddress, isZero } from '../../functions/validate'
 import { useAppDispatch, useAppSelector } from '../hooks'
 import { useCallback, useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { useV2TradeExactIn as useTradeExactIn, useV2TradeExactOut as useTradeExactOut } from '../../hooks/useV2Trades'
+import {
+  useV2TradeExactIn as useTradeExactIn,
+  useV2TradeExactOut as useTradeExactOut,
+  useMistXMinTradeAmount,
+} from '../../hooks/useV2Trades'
 import {
   useUserArcherETHTip,
   useUserArcherGasEstimate,
@@ -21,7 +25,6 @@ import {
   useUserSingleHopOnly,
   useUserSlippageTolerance,
 } from '../user/hooks'
-
 import { ParsedQs } from 'qs'
 import { SwapState } from './reducer'
 import { t } from '@lingui/macro'
@@ -144,6 +147,8 @@ export function useDerivedSwapInfo(doArcher = false): {
   const isExactIn: boolean = independentField === Field.INPUT
   const parsedAmount = tryParseAmount(typedValue, (isExactIn ? inputCurrency : outputCurrency) ?? undefined)
 
+  const minTradeAmounts = useMistXMinTradeAmount(inputCurrency, outputCurrency)
+  console.log('min trade amounts', minTradeAmounts)
   const bestTradeExactIn = useTradeExactIn(isExactIn ? parsedAmount : undefined, outputCurrency ?? undefined, {
     maxHops: singleHopOnly ? 1 : undefined,
   })

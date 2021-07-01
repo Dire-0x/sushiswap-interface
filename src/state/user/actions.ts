@@ -54,3 +54,9 @@ export const updateUserArcherGasEstimate = createAction<{
 export const updateUserArcherTipManualOverride = createAction<{
   userArcherTipManualOverride: boolean
 }>('user/updateUserArcherTipManualOverride')
+export const updateUserMistXUseRelay = createAction<{
+  userMistXUseRelay: boolean
+}>('user/updateUserMistXUseRelay')
+export const updateUserMistXTipMargin = createAction<{
+  userMistXTipMargin: number
+}>('user/updateUserMistXTipMargin')

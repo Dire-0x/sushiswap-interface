@@ -3,6 +3,7 @@ import {
   DEFAULT_ARCHER_GAS_ESTIMATE,
   DEFAULT_ARCHER_GAS_PRICES,
   DEFAULT_DEADLINE_FROM_NOW,
+  DEFAULT_MISTX_TIP_MARGIN,
   INITIAL_ALLOWED_SLIPPAGE,
 } from '../../constants'
 import {
@@ -22,6 +23,8 @@ import {
   updateUserDarkMode,
   updateUserDeadline,
   updateUserExpertMode,
+  updateUserMistXUseRelay,
+  updateUserMistXTipMargin,
   updateUserSingleHopOnly,
   updateUserSlippageTolerance,
 } from './actions'
@@ -69,6 +72,9 @@ export interface UserState {
   userArcherETHTip: string // ETH tip for relay, as full BigInt string
   userArcherGasEstimate: string // Gas estimate for trade
   userArcherTipManualOverride: boolean // is user manually entering tip
+
+  userMistXUseRelay: boolean // use mistX relay for MEV protection
+  userMistXTipMargin: number
 }
 
 function pairKey(token0Address: string, token1Address: string) {
@@ -91,6 +97,8 @@ export const initialState: UserState = {
   userArcherETHTip: DEFAULT_ARCHER_ETH_TIP.toString(),
   userArcherGasEstimate: DEFAULT_ARCHER_GAS_ESTIMATE.toString(),
   userArcherTipManualOverride: false,
+  userMistXUseRelay: false,
+  userMistXTipMargin: DEFAULT_MISTX_TIP_MARGIN,
 }
 
 export default createReducer(initialState, (builder) =>
@@ -165,8 +173,20 @@ export default createReducer(initialState, (builder) =>
     .addCase(toggleURLWarning, (state) => {
       state.URLWarningVisible = !state.URLWarningVisible
     })
+    .addCase(updateUserMistXUseRelay, (state, action) => {
+      state.userMistXUseRelay = action.payload.userMistXUseRelay
+      if (state.userMistXUseRelay) {
+        state.userArcherUseRelay = false
+      }
+    })
+    .addCase(updateUserMistXTipMargin, (state, action) => {
+      state.userMistXTipMargin = action.payload.userMistXTipMargin
+    })
     .addCase(updateUserArcherUseRelay, (state, action) => {
       state.userArcherUseRelay = action.payload.userArcherUseRelay
+      if (state.userArcherUseRelay) {
+        state.userMistXUseRelay = false
+      }
     })
     .addCase(updateUserArcherGasPrice, (state, action) => {
       state.userArcherGasPrice = action.payload.userArcherGasPrice

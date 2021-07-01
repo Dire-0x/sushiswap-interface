@@ -16,6 +16,8 @@ import {
   updateUserDarkMode,
   updateUserDeadline,
   updateUserExpertMode,
+  updateUserMistXTipMargin,
+  updateUserMistXUseRelay,
   updateUserSingleHopOnly,
   updateUserSlippageTolerance,
 } from './actions'
@@ -315,6 +317,38 @@ export function useUserArcherUseRelay(): [boolean, (newUseRelay: boolean) => voi
   )
 
   return [useRelay, setUseRelay]
+}
+
+export function useUserMistXUseRelay(): [boolean, (newUseRelay: boolean) => void] {
+  const dispatch = useAppDispatch()
+
+  const useRelay = useSelector<AppState, AppState['user']['userMistXUseRelay']>((state) => state.user.userMistXUseRelay)
+
+  const setUseRelay = useCallback(
+    (newUseRelay: boolean) => {
+      dispatch(updateUserMistXUseRelay({ userMistXUseRelay: newUseRelay }))
+    },
+    [dispatch]
+  )
+
+  return [useRelay, setUseRelay]
+}
+
+export function useUserMistXTipMargin(): [number, (bribeMargin: number) => void] {
+  const dispatch = useDispatch<AppDispatch>()
+  const userMistXTipMargin = useSelector<AppState, AppState['user']['userMistXTipMargin']>((state) => {
+    return state.user.userMistXTipMargin
+  })
+
+  const setUserMistXTipMargin = useCallback(
+    (newTipMargin: number) => {
+      const tipMargin = newTipMargin < 1 ? 1 : newTipMargin
+      dispatch(updateUserMistXTipMargin({ userMistXTipMargin: tipMargin }))
+    },
+    [dispatch]
+  )
+
+  return [userMistXTipMargin, setUserMistXTipMargin]
 }
 
 export function useUserArcherGasPrice(): [string, (newGasPrice: string) => void] {
